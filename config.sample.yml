@@ -1,0 +1,13 @@
+# sender - The address to send From, and username for SMTP server
+sender: staff@example.com
+
+# sender_name - Full name of the sender
+#               Will together with `sender` form full address: Name <name@host.com>
+sender_name: Example Staff
+
+# password - Plain text password to the SMTP server for authentication
+password: super$ecure89
+
+# SMTP server config
+smtp_host: smtp.example.com
+smtp_port: 587

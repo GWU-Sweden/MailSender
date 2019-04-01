@@ -1,0 +1,15 @@
+args==0.1.0
+backports.functools-lru-cache==1.5
+beautifulsoup4==4.7.1
+certifi==2019.3.9
+chardet==3.0.4
+clint==0.5.1
+get==2019.3.22
+idna==2.8
+post==2019.3.22
+public==2019.3.22
+PyYAML==5.1
+query-string==2019.3.22
+requests==2.21.0
+soupsieve==1.9
+urllib3==1.24.1

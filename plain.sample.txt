@@ -1,0 +1,7 @@
+Hi friends!
+
+This is a sample of a plain text body to send.
+It must contain only ASCII.
+
+Talk to you soon,
+K.
