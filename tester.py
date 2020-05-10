@@ -11,7 +11,7 @@ def get_test_address_prefix():
 def test_spammyness(server, sender, msg):
     try:
         to_prefix = get_test_address_prefix()
-        to = '{}@mail-tester.com'.format(to_prefix)
+        to = '{}@srv1.mail-tester.com'.format(to_prefix)
         del msg['To']
         msg['To'] = to
         server.sendmail(sender, to, msg.as_string())
