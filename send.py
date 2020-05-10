@@ -7,6 +7,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email import encoders
 from email.mime.base import MIMEBase
+from email.header import Header
+from email.message import Message
 import mimetypes
 import os
 import pprint
@@ -19,10 +21,13 @@ except ImportError:
 import tester
 
 
+def contains_non_ascii_characters(str):
+    return not all(ord(c) < 128 for c in str)
+
+
 def ensure_ascii_only(s):
-    for c in s:
-        if ord(c) >= 128:
-            raise Exception("ERROR: non-ASCII character in plain text")
+    if contains_non_ascii_characters(s):
+        raise Exception("ERROR: non-ASCII character in plain text")
 
 
 def smtp_login(host, port, username, password):
@@ -47,9 +52,12 @@ def build_message(sender, sender_address, to, subject, plain_text):
     msg['From'] = sender
     msg['To'] = to
 
-    ensure_ascii_only(plain_text)
+    #ensure_ascii_only(plain_text)
 
-    part1 = MIMEText(plain_text, 'plain')
+    if contains_non_ascii_characters(plain_text):
+        part1 = MIMEText(plain_text, 'plain', 'utf-8')
+    else:
+        part1 = MIMEText(plain_text, 'plain')
     msg.attach(part1)
     msg.add_header('List-Unsubscribe',
                    '<mailto: {}?subject=Unsubscribe>'.format(sender_address))
@@ -142,9 +150,10 @@ if __name__ == '__main__':
     config = load_config(args['config'][0])
 
     sender_address = config['sender']
-    sender_full = sender_address
+    sender_full = unicode(sender_address)
     if 'sender_name' in config:
-        sender_full = "{} <{}>".format(config['sender_name'], sender_address)
+        sender_full = "{} <{}>".format(config['sender_name'].encode('utf-8'),
+                                       sender_address)
 
     if not 'to' in args or len(args['to']) > 1:
         error_usage(
@@ -156,7 +165,8 @@ if __name__ == '__main__':
 
     if not 'subject' in args or len(args['subject']) > 1:
         error_usage('provide subject: --subject="Hello There"')
-    subject = args['subject'][0]
+    subject_str = args['subject'][0].decode('utf-8')
+    subject = Header(subject_str).encode()
     if not 'plain' in args or len(args['plain']) > 1:
         error_usage('provide plain body file: --plain=body.txt')
     plain = load_body(args['plain'][0])
