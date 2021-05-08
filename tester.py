@@ -17,6 +17,6 @@ def test_spammyness(server, sender, msg):
         server.sendmail(sender, to, msg.as_string())
         url = 'https://www.mail-tester.com/{}'.format(to_prefix)
         return url
-    except Exception, e:
+    except Exception as e:
         raise
         raise Exception("Unable to run email sanity tester\n\t{}".format(e))

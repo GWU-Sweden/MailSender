@@ -21,8 +21,8 @@ except ImportError:
 import tester
 
 
-def contains_non_ascii_characters(str):
-    return not all(ord(c) < 128 for c in str)
+def contains_non_ascii_characters(s):
+    return len(s) == len(s.encode())
 
 
 def ensure_ascii_only(s):
@@ -85,7 +85,7 @@ def send(sender, sender_address, recipients, subject, plain_text):
             msg = build_message(sender, sender_address, r, subject, plain_text)
             server.sendmail(sender, r, msg.as_string())
             print("✉️  {}".format(r))
-        except Exception, e:
+        except Exception as e:
             print(e)
             print("🔥  {}".format(r))
 
@@ -120,21 +120,21 @@ def parse_args():
 def load_config(path):
     if not os.path.exists(path):
         raise Exception('Cannot load config: {}'.format(path))
-    with open(path, 'rb') as f:
+    with open(path, 'r') as f:
         return yaml.load(f.read(), Loader=Loader)
 
 
 def load_recipients(path):
     if not os.path.exists(path):
         raise Exception('Cannot load recipients from {}'.format(path))
-    with open(path, 'rb') as f:
+    with open(path, 'r') as f:
         return list(set([x.strip() for x in f.readlines()]))
 
 
 def load_body(path):
     if not os.path.exists(path):
         raise Exception('Cannot load body from {}'.format(path))
-    with open(path, 'rb') as f:
+    with open(path, 'r') as f:
         return f.read()
 
 
@@ -150,9 +150,12 @@ if __name__ == '__main__':
     config = load_config(args['config'][0])
 
     sender_address = config['sender']
-    sender_full = unicode(sender_address)
+    print(config)
+    print(sender_address)
+    print(config['sender_name'])
+    sender_full = sender_address
     if 'sender_name' in config:
-        sender_full = "{} <{}>".format(config['sender_name'].encode('utf-8'),
+        sender_full = "{} <{}>".format(config['sender_name'],
                                        sender_address)
 
     if not 'to' in args or len(args['to']) > 1:
@@ -165,11 +168,12 @@ if __name__ == '__main__':
 
     if not 'subject' in args or len(args['subject']) > 1:
         error_usage('provide subject: --subject="Hello There"')
-    subject_str = args['subject'][0].decode('utf-8')
+    subject_str = args['subject'][0]
     subject = Header(subject_str).encode()
     if not 'plain' in args or len(args['plain']) > 1:
         error_usage('provide plain body file: --plain=body.txt')
     plain = load_body(args['plain'][0])
+    print(plain)
 
     print("Authorizing with SMTP server at {}:{}".format(
         config['smtp_host'], config['smtp_port']))
