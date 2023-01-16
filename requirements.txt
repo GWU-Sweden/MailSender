@@ -8,7 +8,7 @@ get==2019.3.22
 idna==2.8
 post==2019.3.22
 public==2019.3.22
-PyYAML==5.1
+PyYAML==5.4
 query-string==2019.3.22
 requests==2.21.0
 soupsieve==1.9
